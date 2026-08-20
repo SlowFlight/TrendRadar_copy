@@ -125,6 +125,20 @@ jobs:
         if: success()
         run: uv sync --frozen --no-dev
 
+      - name: Install Google Vertex SDK (optional)
+        if: success()
+        run: |
+          echo "Installing Google Vertex AI extras to satisfy litellm dependency..."
+          # If a virtualenv is created by uv, activate it and install into it
+          if [ -d ".venv" ]; then
+            . .venv/bin/activate
+            python -m pip install --upgrade google-cloud-aiplatform || python -m pip install --upgrade "litellm[google]"
+          else
+            # Fallback: install into runner Python
+            python -m pip install --upgrade google-cloud-aiplatform || python -m pip install --upgrade "litellm[google]"
+          fi
+
+
       - name: Verify required files
         if: success()
         run: |
